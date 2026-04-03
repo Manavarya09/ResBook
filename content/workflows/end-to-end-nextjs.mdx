@@ -1,0 +1,232 @@
+---
+title: End-to-End Next.js App with Claude Code
+slug: end-to-end-nextjs
+description: Build a complete Next.js application from scratch using Claude Code and Cursor for rapid development.
+author: Tanay Pratap
+complexity: Intermediate
+toolsUsed: [claude-code, cursor]
+dateAdded: 2025-02-20
+---
+
+## Overview
+
+This workflow demonstrates how to leverage Claude Code and Cursor to build a production-ready Next.js application in minimal time. We'll scaffold a project, generate components, write tests, and deploy—all with AI assistance.
+
+<WorkflowStep step={1} title="Bootstrap the Project">
+Use Claude Code to initialize a new Next.js project with all necessary configuration:
+
+<PromptBlock agent="USER">
+Create a new Next.js 15 project with:
+- App Router
+- TypeScript
+- Tailwind CSS v4
+- shadcn/ui components
+- ESLint and Prettier
+- Jest testing setup
+
+Use `bun` as the package manager.
+</PromptBlock>
+
+Claude will:
+1. Run `bunx create-next-app@latest`
+2. Answer prompts for your preferences
+3. Install and verify dependencies
+4. Create initial project structure
+
+Expected time: **2-3 minutes**
+</WorkflowStep>
+
+<WorkflowStep step={2} title="Design & Generate Core Components">
+Open the project in **Cursor** and use the AI chat to design components:
+
+<PromptBlock agent="USER">
+I need a ProductCard component that shows:
+- Product image
+- Title and description
+- Price with currency
+- Star rating (1-5)
+- Add to cart button
+
+Style it with Tailwind and make it responsive. Include TypeScript types.
+</PromptBlock>
+
+Cursor will:
+1. Generate the component in `src/components/ProductCard.tsx`
+2. Create TypeScript interfaces
+3. Apply Tailwind styling
+4. Generate a Storybook story (if configured)
+
+Repeat for other core components:
+- Navigation bar
+- Footer
+- Hero section
+- Product grid layout
+
+Expected time: **5-10 minutes per component**
+</WorkflowStep>
+
+<WorkflowStep step={3} title="Build API Routes">
+Use Claude Code to scaffold API handlers:
+
+<PromptBlock agent="USER">
+Create API routes for an e-commerce app:
+- GET /api/products (list all products)
+- GET /api/products/[id] (get single product)
+- POST /api/cart (add to cart)
+- POST /api/orders (create order)
+
+Include error handling, validation with Zod, and MongoDB integration hints.
+</PromptBlock>
+
+Expected output:
+```typescript
+// app/api/products/route.ts
+export async function GET() {
+  // Fetch from database
+}
+
+// app/api/products/[id]/route.ts
+export async function GET(req, { params }) {
+  // Fetch single product
+}
+```
+
+Expected time: **5-10 minutes**
+</WorkflowStep>
+
+<WorkflowStep step={4} title="Implement Data Fetching">
+Connect your components to real data:
+
+<PromptBlock agent="USER">
+Update ProductCard to:
+- Accept a `productId` prop
+- Fetch product data from /api/products/[id]
+- Show loading state while fetching
+- Handle error cases gracefully
+- Cache data for 60 seconds using React's experimental `use()` hook
+</PromptBlock>
+
+Claude will:
+1. Update the component with async data fetching
+2. Add error boundaries
+3. Implement optimistic updates
+4. Add loading skeletons
+
+Expected time: **3-5 minutes**
+</WorkflowStep>
+
+<WorkflowStep step={5} title="Generate Unit Tests">
+Ask Cursor to write comprehensive tests:
+
+<PromptBlock agent="USER">
+Write Jest tests for ProductCard component:
+- Renders product title and price
+- Handles missing data gracefully
+- Shows loading state
+- Click "Add to Cart" button fires callback
+- Responsive design (check mobile/desktop renders)
+</PromptBlock>
+
+Cursor generates:
+```typescript
+// ProductCard.test.tsx
+describe('ProductCard', () => {
+  it('renders product title', () => { ... });
+  it('handles missing data', () => { ... });
+  // ... more tests
+});
+```
+
+Expected time: **5-8 minutes per component**
+</WorkflowStep>
+
+<WorkflowStep step={6} title="Set Up Authentication">
+Use Claude Code to add auth:
+
+<PromptBlock agent="USER">
+Add NextAuth.js v5 to the project:
+- GitHub OAuth provider
+- Email/password strategy (with password hashing)
+- Middleware to protect routes
+- User session management
+- Logout functionality
+</PromptBlock>
+
+Claude will:
+1. Install `next-auth@5`
+2. Create `auth.ts` configuration
+3. Add API routes for auth
+4. Set up middleware
+5. Update environment variables
+
+Expected time: **5-7 minutes**
+</WorkflowStep>
+
+<WorkflowStep step={7} title="Add Database Layer">
+Scaffold database integration:
+
+<PromptBlock agent="USER">
+Set up database with:
+- Prisma ORM
+- PostgreSQL (or your choice)
+- User, Product, and Order models
+- Migrations setup
+- Seed script with dummy data
+</PromptBlock>
+
+Expected time: **5-10 minutes**
+</WorkflowStep>
+
+<WorkflowStep step={8} title="Deploy to Vercel">
+Use Claude Code for final deployment:
+
+<PromptBlock agent="USER">
+Deploy this Next.js app to Vercel:
+- Connect to GitHub
+- Set up environment variables
+- Run migrations on deployment
+- Set up preview deployments
+</PromptBlock>
+
+Expected time: **3-5 minutes**
+</WorkflowStep>
+
+## Total Time Estimate
+
+| Phase | Time |
+|-------|------|
+| Bootstrap | 3 min |
+| Components (4) | 20 min |
+| API Routes | 10 min |
+| Data Fetching | 5 min |
+| Tests | 20 min |
+| Auth | 7 min |
+| Database | 10 min |
+| Deployment | 5 min |
+| **Total** | **~80 minutes** |
+
+**Manual implementation would take 4-8 hours. AI assistance cuts this to ~1.5 hours.**
+
+## Pro Tips
+
+- Use Cursor for component design and iteration (visual feedback)
+- Use Claude Code for scaffolding and boilerplate
+- Let AI write tests—they're verbose and tedious
+- Always review generated auth code before deploying
+- Commit frequently with AI-generated commit messages
+
+## Key Prompting Techniques
+
+1. **Be Specific**: "Add TypeScript types" not "add types"
+2. **Include Constraints**: "Responsive design" + "dark mode support"
+3. **Provide Examples**: Paste JSON structure you expect
+4. **Ask for Tests**: "Include unit tests with vitest"
+5. **Iterative Refinement**: "Now add X feature to the previous component"
+
+---
+
+**Complexity**: Intermediate (assumes Next.js familiarity, not React)
+
+**Estimated AI Usage**: ~30-40 interactions with Claude across both tools
+
+**Success Metric**: Deployed, working e-commerce app with auth, database, and 80% test coverage.

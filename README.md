@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ResBook
 
-## Getting Started
+A markdown-driven directory for AI tools, agentic workflows, and developer tips. Built with Next.js, React, and Tailwind CSS 4.0.
 
-First, run the development server:
+## Features
+
+- **Markdown-driven content**: All content is stored as `.mdx` files in `/content`
+- **MDX Components**: Extensible React components for enhanced Markdown:
+  - `<Verdict>`: Display whether a tool is worth using with pricing info
+  - `<WorkflowStep>`: Create step-by-step workflow guides
+  - `<PromptBlock>`: Display AI prompts with agent labels
+  - `<ToolLink>`: Internal links to other tools
+- **Static Site Generation**: Pre-rendered pages for optimal performance
+- **Search**: Client-side search across tools and workflows
+- **Monospace Typography**: Terminal-inspired aesthetic with strict grayscale
+- **Dark Mode**: Full dark mode support
+
+## Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd resbook
+bun install
+bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Adding Content
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### New Tool (content/tools/my-tool.mdx)
 
-## Learn More
+```mdx
+---
+title: Tool Name
+slug: my-tool
+description: Brief description
+category: LLM | Agent | IDE | CLI
+pricing: Free | Freemium | Paid
+worthIt: true
+dateAdded: 2025-02-20
+---
 
-To learn more about Next.js, take a look at the following resources:
+<Verdict isWorthIt={true} cost="free" />
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Overview
+Content here...
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### New Workflow (content/workflows/my-workflow.mdx)
 
-## Deploy on Vercel
+```mdx
+---
+title: Workflow Name
+slug: my-workflow
+description: Description
+author: Your Name
+complexity: Beginner | Intermediate | Advanced
+toolsUsed: [tool-slug-1]
+dateAdded: 2025-02-20
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<WorkflowStep step={1} title="Step One">
+Content for step 1
+</WorkflowStep>
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tech Stack
+
+- Next.js 16 (App Router)
+- React 19
+- Tailwind CSS v4.0
+- MDX (next-mdx-remote)
+- TypeScript
+
+## Structure
+
+```
+resbook/
+├── app/                    # Routes
+├── components/             # React components
+│   ├── layout/            # Navbar, Footer, Container
+│   └── mdx/               # Verdict, WorkflowStep, etc.
+├── content/               # Markdown files
+│   ├── tools/
+│   └── workflows/
+└── lib/                   # Utilities and types
+```
+
+## Build & Deploy
+
+```bash
+bun run build      # Production build
+bun start          # Run production
+```
+
+Deploy to Vercel, Netlify, or any static host.
+
+---
+
+**Terminal-inspired, markdown-powered AI tools & workflows directory.**

@@ -1,0 +1,79 @@
+---
+title: Cursor
+slug: cursor
+description: AI-powered code editor built on VSCode, with built-in AI capabilities and project awareness.
+category: IDE
+pricing: Freemium
+worthIt: true
+dateAdded: 2025-02-10
+---
+
+<Verdict isWorthIt={true} cost="freemium" />
+
+## Overview
+
+Cursor is a modern IDE built on top of VSCode, deeply integrated with AI to provide real-time code suggestions, context-aware completions, and agentic code generation. It's designed for developers who want AI to be a first-class citizen in their workflow.
+
+## Key Features
+
+- **AI Completion**: Context-aware code suggestions as you type
+- **Chat Interface**: Talk to Claude or GPT-4 about your code
+- **Project Context**: AI understands your entire codebase
+- **Code Generation**: Generate functions, tests, and boilerplate
+- **Codebase Search**: Intelligent indexing and search across files
+- **Terminal Integration**: Run and debug code with AI assistance
+
+## Installation
+
+Download from [cursor.sh](https://cursor.sh)
+
+Sync your existing VSCode settings:
+```bash
+# Cursor will import your VSCode extensions and config on first launch
+```
+
+## Quick Start
+
+1. Open a project folder
+2. Hit `Cmd+K` (or `Ctrl+K`) to open the AI chat
+3. Ask Claude to refactor, test, or explain code
+4. Use `Cmd+Shift+L` for inline completions
+
+## Use Cases
+
+- **Rapid Prototyping**: Generate entire features with natural language
+- **Learning**: Ask Claude to explain unfamiliar code patterns
+- **Testing**: Generate unit tests for existing functions
+- **Debugging**: AI helps identify and fix bugs
+- **Refactoring**: Large-scale code improvements with AI guidance
+
+## Pricing
+
+- **Free Tier**: 2000 requests/month, Claude 3.5 Sonnet
+- **Pro Tier**: $20/month, unlimited requests, early access to new features
+- **Teams**: Custom pricing for enterprises
+
+## Performance
+
+Cursor runs locally with minimal overhead. The AI backend is cloud-based, so there's a small latency (~500ms) per request.
+
+## Customization
+
+Edit `.cursor/settings.json` for:
+- Custom system prompts
+- Model selection (Claude, GPT-4)
+- Auto-save and formatting rules
+- Custom keybindings
+
+## Comparison to VSCode + Extensions
+
+| Feature | Cursor | VSCode + AI Ext |
+|---------|--------|-----------------|
+| Native AI Chat | ✓ | ✗ |
+| Context Awareness | ✓✓ | ✓ |
+| Code Generation | ✓✓ | ✓ |
+| Setup Time | 5 min | 30 min |
+
+---
+
+**Worth It?** Absolutely for daily development. The context awareness and code generation justify the $20/month even on the free tier.

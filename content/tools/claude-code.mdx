@@ -1,0 +1,75 @@
+---
+title: Claude Code
+slug: claude-code
+description: Official CLI for Claude, enabling agentic coding workflows directly from your terminal.
+category: CLI
+pricing: Free
+worthIt: true
+dateAdded: 2025-02-15
+---
+
+<Verdict isWorthIt={true} cost="free" />
+
+## Overview
+
+Claude Code is Anthropic's official CLI tool for Claude, allowing developers to leverage Claude's capabilities directly from the command line. It enables seamless integration with your development workflow through structured prompts, tool use, and agent execution.
+
+## Key Features
+
+- **Agent Execution**: Run Claude agents that can read, write, and modify files
+- **Tool Use**: Access file operations, bash commands, and specialized tools
+- **Interactive Mode**: Chat with Claude while maintaining context
+- **Project Awareness**: Automatic detection of project structure and configuration
+- **Streaming Output**: Real-time feedback as Claude processes your requests
+
+## Installation
+
+```bash
+npm install -g @anthropic-ai/claude-code
+```
+
+## Quick Start
+
+Initialize a new project:
+```bash
+claude-code init
+```
+
+Start an interactive session:
+```bash
+claude-code chat
+```
+
+Execute a prompt from file:
+```bash
+claude-code prompt ./my-prompt.md
+```
+
+## Use Cases
+
+- **Automated Refactoring**: Ask Claude to refactor large codebases
+- **Test Generation**: Generate comprehensive test suites
+- **Documentation**: Auto-generate docs from code
+- **Code Review**: Get AI-powered code review feedback
+- **Bug Fixing**: Describe a bug, let Claude find and fix it
+
+## Terminal Setup
+
+Claude Code integrates with your shell (bash, zsh) through hooks. Configure in `.claude/settings.json` for custom behaviors like auto-commit or lint-on-save.
+
+## Integration Tips
+
+- Use with existing Next.js, React, or Node.js projects
+- Works with any git repository
+- Respects `.gitignore` and `.claude/ignore` patterns
+- Supports remote repositories via git clone
+
+## Limitations
+
+- Requires Node.js 18+
+- Large file edits may take longer
+- Some complex refactorings need human review
+
+---
+
+**Worth It?** Yes—especially if you're doing rapid prototyping or maintaining multiple projects. The AI context awareness saves significant debugging time.
