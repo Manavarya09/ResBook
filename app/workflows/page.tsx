@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getWorkflows } from "@/lib/mdx";
 import { WorkflowsExplorer } from "@/components/listing/WorkflowsExplorer";
+import { extractWorkflowContentSummary } from "@/lib/workflowSummaries";
 
 export const metadata: Metadata = {
   title: "Workflows | ResBook",
@@ -10,7 +11,17 @@ export const metadata: Metadata = {
 
 export default async function WorkflowsPage() {
   const workflowsData = await getWorkflows();
-  const workflows = workflowsData.map((workflow) => workflow.frontmatter);
+  const workflows = workflowsData.map((workflow) => {
+    const summary = extractWorkflowContentSummary(workflow.content);
+
+    return {
+      ...workflow.frontmatter,
+      bestFor: summary.bestFor,
+      expectedOutput: summary.expectedOutput,
+      stepCount: summary.stepCount,
+      promptCount: summary.promptCount,
+    };
+  });
 
   return (
     <div className="min-h-screen border-l border-gray-300 dark:border-gray-700">

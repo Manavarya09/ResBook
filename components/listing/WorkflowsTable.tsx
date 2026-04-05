@@ -68,6 +68,16 @@ export function WorkflowsTable({ workflows }: WorkflowsTableProps) {
                 {info.getValue()}
               </Link>
               <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">{workflow.description}</p>
+              {workflow.bestFor && (
+                <p className="mt-2 text-xs text-gray-700 dark:text-gray-300">
+                  <span className="font-semibold">Best for:</span> {workflow.bestFor}
+                </p>
+              )}
+              {workflow.expectedOutput && (
+                <p className="mt-1 text-xs text-gray-700 dark:text-gray-300">
+                  <span className="font-semibold">Output:</span> {workflow.expectedOutput}
+                </p>
+              )}
             </div>
           );
         },
@@ -114,6 +124,37 @@ export function WorkflowsTable({ workflows }: WorkflowsTableProps) {
         enableSorting: true,
         enableColumnFilter: false,
       }),
+      columnHelper.accessor(
+        (row) => row.stepCount ?? 0,
+        {
+          id: "stepCount",
+          header: "Flow",
+          cell: (info) => {
+            const workflow = info.row.original;
+            const steps = workflow.stepCount ?? 0;
+            const prompts = workflow.promptCount ?? 0;
+
+            return (
+              <div className="space-y-1 text-xs">
+                <p className="font-semibold">{steps} step{steps === 1 ? "" : "s"}</p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {prompts} prompt{prompts === 1 ? "" : "s"}
+                </p>
+              </div>
+            );
+          },
+          enableSorting: true,
+          enableColumnFilter: false,
+          sortingFn: (rowA, rowB) => {
+            const stepDiff = (rowA.original.stepCount ?? 0) - (rowB.original.stepCount ?? 0);
+            if (stepDiff !== 0) {
+              return stepDiff;
+            }
+
+            return (rowA.original.promptCount ?? 0) - (rowB.original.promptCount ?? 0);
+          },
+        }
+      ),
       columnHelper.accessor("toolsUsed", {
         header: "Tools",
         cell: (info) => {
@@ -186,7 +227,7 @@ export function WorkflowsTable({ workflows }: WorkflowsTableProps) {
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: (row, _columnId, filterValue) => {
-      const searchableValue = `${row.original.title} ${row.original.description} ${row.original.author} ${row.original.complexity} ${row.original.toolsUsed.join(" ")}`.toLowerCase();
+      const searchableValue = `${row.original.title} ${row.original.description} ${row.original.author} ${row.original.complexity} ${row.original.toolsUsed.join(" ")} ${row.original.bestFor ?? ""} ${row.original.expectedOutput ?? ""}`.toLowerCase();
       return searchableValue.includes((filterValue as string).toLowerCase());
     },
     getCoreRowModel: getCoreRowModel(),
@@ -211,6 +252,14 @@ export function WorkflowsTable({ workflows }: WorkflowsTableProps) {
       ? 0
       : Math.round(
           (filteredRows.reduce((sum, row) => sum + row.original.estimatedHours, 0) /
+            filteredRows.length) *
+            10
+        ) / 10;
+  const averageSteps =
+    filteredRows.length === 0
+      ? 0
+      : Math.round(
+          (filteredRows.reduce((sum, row) => sum + (row.original.stepCount ?? 0), 0) /
             filteredRows.length) *
             10
         ) / 10;
@@ -243,7 +292,7 @@ export function WorkflowsTable({ workflows }: WorkflowsTableProps) {
 
   return (
     <div className="space-y-0">
-      <div className="mb-4 grid gap-3 md:grid-cols-4">
+      <div className="mb-4 grid gap-3 md:grid-cols-5">
         <div className="border border-gray-300 p-3 dark:border-gray-700">
           <p className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400">Visible workflows</p>
           <p className="mt-2 text-2xl font-bold">{filteredRows.length}</p>
@@ -255,6 +304,10 @@ export function WorkflowsTable({ workflows }: WorkflowsTableProps) {
         <div className="border border-gray-300 p-3 dark:border-gray-700">
           <p className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400">Avg time</p>
           <p className="mt-2 text-2xl font-bold">{averageHours}h</p>
+        </div>
+        <div className="border border-gray-300 p-3 dark:border-gray-700">
+          <p className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400">Avg steps</p>
+          <p className="mt-2 text-2xl font-bold">{averageSteps}</p>
         </div>
         <div className="border border-gray-300 p-3 dark:border-gray-700">
           <p className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400">Tool coverage</p>
@@ -382,6 +435,7 @@ export function WorkflowsTable({ workflows }: WorkflowsTableProps) {
             <option value="readinessScore:asc">Sort: Readiness (Low)</option>
             <option value="estimatedHours:asc">Sort: Fastest First</option>
             <option value="estimatedHours:desc">Sort: Longest First</option>
+            <option value="stepCount:desc">Sort: Most Detailed Flow</option>
             <option value="title:asc">Sort: Title</option>
             <option value="complexity:asc">Sort: Complexity</option>
             <option value="author:asc">Sort: Author</option>

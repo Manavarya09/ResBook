@@ -27,6 +27,10 @@ export interface WorkflowFrontmatter {
   complexity: WorkflowComplexity;
   toolsUsed: string[];
   dateAdded: string;
+  bestFor?: string;
+  expectedOutput?: string;
+  stepCount?: number;
+  promptCount?: number;
   estimatedHours?: number;
   prerequisites?: string[];
   failurePoints?: string[];
