@@ -3,8 +3,11 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { WorkflowFrontmatter } from "@/lib/types";
-
-type SortOption = "newest" | "oldest" | "title";
+import {
+  filterAndSortWorkflows,
+  getAvailableWorkflowTools,
+  type WorkflowSortOption,
+} from "@/lib/listingFilters";
 
 interface WorkflowsExplorerProps {
   workflows: WorkflowFrontmatter[];
@@ -14,49 +17,20 @@ export function WorkflowsExplorer({ workflows }: WorkflowsExplorerProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [complexity, setComplexity] = useState<"All" | WorkflowFrontmatter["complexity"]>("All");
   const [toolFilter, setToolFilter] = useState("All");
-  const [sortBy, setSortBy] = useState<SortOption>("newest");
+  const [sortBy, setSortBy] = useState<WorkflowSortOption>("newest");
 
-  const availableTools = useMemo(() => {
-    const values = new Set<string>();
-    for (const workflow of workflows) {
-      for (const tool of workflow.toolsUsed) {
-        values.add(tool);
-      }
-    }
-    return Array.from(values).sort((a, b) => a.localeCompare(b));
-  }, [workflows]);
+  const availableTools = useMemo(() => getAvailableWorkflowTools(workflows), [workflows]);
 
-  const filteredWorkflows = useMemo(() => {
-    const normalizedQuery = searchTerm.trim().toLowerCase();
-
-    const result = workflows.filter((workflow) => {
-      const matchesSearch =
-        normalizedQuery.length === 0 ||
-        workflow.title.toLowerCase().includes(normalizedQuery) ||
-        workflow.description.toLowerCase().includes(normalizedQuery) ||
-        workflow.author.toLowerCase().includes(normalizedQuery);
-
-      const matchesComplexity = complexity === "All" || workflow.complexity === complexity;
-      const matchesTool = toolFilter === "All" || workflow.toolsUsed.includes(toolFilter);
-
-      return matchesSearch && matchesComplexity && matchesTool;
-    });
-
-    return result.sort((a, b) => {
-      if (sortBy === "title") {
-        return a.title.localeCompare(b.title);
-      }
-
-      const aTime = new Date(a.dateAdded).getTime();
-      const bTime = new Date(b.dateAdded).getTime();
-
-      if (sortBy === "oldest") {
-        return aTime - bTime;
-      }
-
-      return bTime - aTime;
-    });
-  }, [workflows, searchTerm, complexity, toolFilter, sortBy]);
+  const filteredWorkflows = useMemo(
+    () =>
+      filterAndSortWorkflows(workflows, {
+        searchTerm,
+        complexity,
+        toolFilter,
+        sortBy,
+      }),
+    [workflows, searchTerm, complexity, toolFilter, sortBy]
+  );
 
   return (
     <>
@@ -73,7 +47,7 @@ export function WorkflowsExplorer({ workflows }: WorkflowsExplorerProps) {
 
           <select
             value={sortBy}
-            onChange={(event) => setSortBy(event.target.value as SortOption)}
+            onChange={(event) => setSortBy(event.target.value as WorkflowSortOption)}
             className="w-full border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-black"
           >
             <option value="newest">Sort: Newest first</option>

@@ -3,9 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ToolFrontmatter } from "@/lib/types";
-
-type RecommendationFilter = "all" | "recommended" | "not-recommended";
-type SortOption = "newest" | "oldest" | "title";
+import { filterAndSortTools, type RecommendationFilter, type ToolSortOption } from "@/lib/listingFilters";
 
 interface ToolsExplorerProps {
   tools: ToolFrontmatter[];
@@ -16,42 +14,19 @@ export function ToolsExplorer({ tools }: ToolsExplorerProps) {
   const [category, setCategory] = useState<"All" | ToolFrontmatter["category"]>("All");
   const [pricing, setPricing] = useState<"All" | ToolFrontmatter["pricing"]>("All");
   const [recommendation, setRecommendation] = useState<RecommendationFilter>("all");
-  const [sortBy, setSortBy] = useState<SortOption>("newest");
+  const [sortBy, setSortBy] = useState<ToolSortOption>("newest");
 
-  const filteredTools = useMemo(() => {
-    const normalizedQuery = searchTerm.trim().toLowerCase();
-
-    const result = tools.filter((tool) => {
-      const matchesSearch =
-        normalizedQuery.length === 0 ||
-        tool.title.toLowerCase().includes(normalizedQuery) ||
-        tool.description.toLowerCase().includes(normalizedQuery);
-
-      const matchesCategory = category === "All" || tool.category === category;
-      const matchesPricing = pricing === "All" || tool.pricing === pricing;
-      const matchesRecommendation =
-        recommendation === "all" ||
-        (recommendation === "recommended" && tool.worthIt) ||
-        (recommendation === "not-recommended" && !tool.worthIt);
-
-      return matchesSearch && matchesCategory && matchesPricing && matchesRecommendation;
-    });
-
-    return result.sort((a, b) => {
-      if (sortBy === "title") {
-        return a.title.localeCompare(b.title);
-      }
-
-      const aTime = new Date(a.dateAdded).getTime();
-      const bTime = new Date(b.dateAdded).getTime();
-
-      if (sortBy === "oldest") {
-        return aTime - bTime;
-      }
-
-      return bTime - aTime;
-    });
-  }, [tools, searchTerm, category, pricing, recommendation, sortBy]);
+  const filteredTools = useMemo(
+    () =>
+      filterAndSortTools(tools, {
+        searchTerm,
+        category,
+        pricing,
+        recommendation,
+        sortBy,
+      }),
+    [tools, searchTerm, category, pricing, recommendation, sortBy]
+  );
 
   return (
     <>
@@ -68,7 +43,7 @@ export function ToolsExplorer({ tools }: ToolsExplorerProps) {
 
           <select
             value={sortBy}
-            onChange={(event) => setSortBy(event.target.value as SortOption)}
+            onChange={(event) => setSortBy(event.target.value as ToolSortOption)}
             className="w-full border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-black"
           >
             <option value="newest">Sort: Newest first</option>

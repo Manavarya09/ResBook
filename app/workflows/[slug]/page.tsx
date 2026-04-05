@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getWorkflowBySlug, getAllWorkflowSlugs, getWorkflows } from "@/lib/mdx";
+import { getSiteUrl, siteConfig } from "@/lib/site";
 import { Verdict } from "@/components/mdx/Verdict";
 import { WorkflowStep } from "@/components/mdx/WorkflowStep";
 import { PromptBlock } from "@/components/mdx/PromptBlock";
@@ -31,13 +32,35 @@ export async function generateMetadata({ params }: WorkflowPageProps): Promise<M
     };
   }
 
+  const canonicalUrl = getSiteUrl(`/workflows/${slug}`);
+  const title = `${workflow.frontmatter.title} | ResBook`;
+
   return {
-    title: `${workflow.frontmatter.title} | ResBook`,
+    title,
     description: workflow.frontmatter.description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
-      title: `${workflow.frontmatter.title} | ResBook`,
+      title,
       description: workflow.frontmatter.description,
+      url: canonicalUrl,
       type: "article",
+      siteName: siteConfig.name,
+      images: [
+        {
+          url: siteConfig.defaultOgPath,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: workflow.frontmatter.description,
+      images: [siteConfig.defaultOgPath],
     },
   };
 }

@@ -1,13 +1,13 @@
 import type { MetadataRoute } from "next";
 import { getAllToolSlugs, getAllWorkflowSlugs } from "@/lib/mdx";
-
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://resbook.vercel.app";
+import { getSiteUrl } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [toolSlugs, workflowSlugs] = await Promise.all([
     getAllToolSlugs(),
     getAllWorkflowSlugs(),
   ]);
+  const baseUrl = getSiteUrl();
 
   const now = new Date();
 
@@ -17,18 +17,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/workflows",
     "/search",
     "/resources",
+    "/llms.txt",
   ].map((path) => ({
-    url: `${BASE_URL}${path}`,
+    url: `${baseUrl}${path}`,
     lastModified: now,
   }));
 
   const toolRoutes: MetadataRoute.Sitemap = toolSlugs.map((slug) => ({
-    url: `${BASE_URL}/tools/${slug}`,
+    url: `${baseUrl}/tools/${slug}`,
     lastModified: now,
   }));
 
   const workflowRoutes: MetadataRoute.Sitemap = workflowSlugs.map((slug) => ({
-    url: `${BASE_URL}/workflows/${slug}`,
+    url: `${baseUrl}/workflows/${slug}`,
     lastModified: now,
   }));
 
