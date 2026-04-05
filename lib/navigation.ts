@@ -12,6 +12,11 @@ export const navigation: NavItem[] = [
     icon: "home",
   },
   {
+    label: "Search",
+    href: "/search",
+    icon: "search",
+  },
+  {
     label: "Tools",
     href: "/tools",
     icon: "tools",

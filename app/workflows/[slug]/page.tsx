@@ -1,5 +1,7 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import Link from "next/link";
 import { getWorkflowBySlug, getAllWorkflowSlugs, getWorkflows } from "@/lib/mdx";
 import { Verdict } from "@/components/mdx/Verdict";
 import { WorkflowStep } from "@/components/mdx/WorkflowStep";
@@ -17,6 +19,27 @@ interface WorkflowPageProps {
 export async function generateStaticParams() {
   const slugs = await getAllWorkflowSlugs();
   return slugs.map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: WorkflowPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const workflow = await getWorkflowBySlug(slug);
+
+  if (!workflow) {
+    return {
+      title: "Workflow Not Found | ResBook",
+    };
+  }
+
+  return {
+    title: `${workflow.frontmatter.title} | ResBook`,
+    description: workflow.frontmatter.description,
+    openGraph: {
+      title: `${workflow.frontmatter.title} | ResBook`,
+      description: workflow.frontmatter.description,
+      type: "article",
+    },
+  };
 }
 
 const components = {
@@ -53,13 +76,13 @@ export default async function WorkflowPage({ params }: WorkflowPageProps) {
       <div className="max-w-3xl px-8 py-12">
         {/* Breadcrumb */}
         <div className="mb-8 text-sm flex items-center gap-2 text-gray-600 dark:text-gray-400">
-          <a href="/" className="hover:text-black dark:hover:text-white">
+          <Link href="/" className="hover:text-black dark:hover:text-white">
             home
-          </a>
+          </Link>
           <span>/</span>
-          <a href="/" className="hover:text-black dark:hover:text-white">
+          <Link href="/workflows" className="hover:text-black dark:hover:text-white">
             workflows
-          </a>
+          </Link>
           <span>/</span>
           <span className="text-black dark:text-white">{workflow.frontmatter.title}</span>
         </div>
@@ -90,12 +113,13 @@ export default async function WorkflowPage({ params }: WorkflowPageProps) {
               </p>
               <div className="flex flex-wrap gap-2">
                 {workflow.frontmatter.toolsUsed.map((toolSlug) => (
-                  <span
+                  <Link
                     key={toolSlug}
+                    href={`/tools/${toolSlug}`}
                     className="text-xs border border-gray-300 px-3 py-1 bg-gray-50 dark:bg-gray-950 dark:border-gray-700"
                   >
                     {toolSlug}
-                  </span>
+                  </Link>
                 ))}
               </div>
             </div>

@@ -20,9 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${jetBrainsMono.variable} h-full`}>
-      <body className="min-h-full flex bg-white text-black font-mono antialiased dark:bg-black dark:text-white">
+      <body className="min-h-full bg-white text-black font-mono antialiased dark:bg-black dark:text-white">
         <Sidebar />
-        <main className="ml-64 flex-1">{children}</main>
+        <main className="min-h-screen pt-14 md:ml-64 md:pt-0">{children}</main>
       </body>
     </html>
   );
