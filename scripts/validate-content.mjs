@@ -36,6 +36,21 @@ const workflowSchema = {
   },
 };
 
+const dotfileSchema = {
+  required: [
+    "title",
+    "slug",
+    "description",
+    "author",
+    "kind",
+    "toolsUsed",
+    "dateAdded",
+  ],
+  enums: {
+    kind: new Set(["Prompt Pack", "Config", "Template"]),
+  },
+};
+
 function isValidDate(value) {
   if (value instanceof Date) {
     return Number.isFinite(value.getTime());
@@ -59,6 +74,11 @@ async function getMdxFiles(dirPath) {
   return entries
     .filter((entry) => entry.isFile() && entry.name.endsWith(".mdx"))
     .map((entry) => path.join(dirPath, entry.name));
+}
+
+async function getFilenameSlugs(dirPath) {
+  const files = await getMdxFiles(dirPath);
+  return new Set(files.map((filePath) => path.basename(filePath, ".mdx")));
 }
 
 function validateSharedFrontmatter(data, schema, filePath, errors) {
@@ -90,7 +110,7 @@ function validateToolFrontmatter(data, filePath, errors) {
   if ("worthIt" in data) assertType("worthIt", data.worthIt, "boolean", errors, filePath);
 }
 
-function validateWorkflowFrontmatter(data, filePath, errors) {
+function validateWorkflowFrontmatter(data, filePath, errors, validToolSlugs) {
   validateSharedFrontmatter(data, workflowSchema, filePath, errors);
 
   if ("author" in data) assertType("author", data.author, "string", errors, filePath);
@@ -103,6 +123,36 @@ function validateWorkflowFrontmatter(data, filePath, errors) {
       const nonStringTool = data.toolsUsed.find((toolSlug) => typeof toolSlug !== "string");
       if (nonStringTool !== undefined) {
         errors.push(`${filePath}: frontmatter "toolsUsed" must only contain strings`);
+      }
+
+      for (const toolSlug of data.toolsUsed) {
+        if (typeof toolSlug === "string" && !validToolSlugs.has(toolSlug)) {
+          errors.push(`${filePath}: toolsUsed references unknown tool slug "${toolSlug}"`);
+        }
+      }
+    }
+  }
+}
+
+function validateDotfileFrontmatter(data, filePath, errors, validToolSlugs) {
+  validateSharedFrontmatter(data, dotfileSchema, filePath, errors);
+
+  if ("author" in data) assertType("author", data.author, "string", errors, filePath);
+
+  if ("toolsUsed" in data) {
+    const isArray = Array.isArray(data.toolsUsed);
+    if (!isArray) {
+      errors.push(`${filePath}: frontmatter "toolsUsed" must be an array of tool slugs`);
+    } else {
+      const nonStringTool = data.toolsUsed.find((toolSlug) => typeof toolSlug !== "string");
+      if (nonStringTool !== undefined) {
+        errors.push(`${filePath}: frontmatter "toolsUsed" must only contain strings`);
+      }
+
+      for (const toolSlug of data.toolsUsed) {
+        if (typeof toolSlug === "string" && !validToolSlugs.has(toolSlug)) {
+          errors.push(`${filePath}: toolsUsed references unknown tool slug "${toolSlug}"`);
+        }
       }
     }
   }
@@ -117,7 +167,7 @@ function validateFilenameMatchesSlug(filePath, slug, errors) {
   }
 }
 
-async function validateDirectory(dirPath, type, seenSlugs, errors) {
+async function validateDirectory(dirPath, type, seenSlugs, errors, validToolSlugs) {
   const files = await getMdxFiles(dirPath);
 
   for (const filePath of files) {
@@ -130,8 +180,10 @@ async function validateDirectory(dirPath, type, seenSlugs, errors) {
 
     if (type === "tools") {
       validateToolFrontmatter(data, filePath, errors);
+    } else if (type === "workflows") {
+      validateWorkflowFrontmatter(data, filePath, errors, validToolSlugs);
     } else {
-      validateWorkflowFrontmatter(data, filePath, errors);
+      validateDotfileFrontmatter(data, filePath, errors, validToolSlugs);
     }
 
     validateFilenameMatchesSlug(filePath, data.slug, errors);
@@ -152,13 +204,17 @@ async function main() {
   const errors = [];
   const toolSlugs = new Set();
   const workflowSlugs = new Set();
+  const dotfileSlugs = new Set();
 
   const toolsDir = path.join(rootDir, "content", "tools");
   const workflowsDir = path.join(rootDir, "content", "workflows");
+  const dotfilesDir = path.join(rootDir, "content", "dotfiles");
+  const validToolSlugs = await getFilenameSlugs(toolsDir);
 
-  const [toolCount, workflowCount] = await Promise.all([
-    validateDirectory(toolsDir, "tools", toolSlugs, errors),
-    validateDirectory(workflowsDir, "workflows", workflowSlugs, errors),
+  const [toolCount, workflowCount, dotfileCount] = await Promise.all([
+    validateDirectory(toolsDir, "tools", toolSlugs, errors, validToolSlugs),
+    validateDirectory(workflowsDir, "workflows", workflowSlugs, errors, validToolSlugs),
+    validateDirectory(dotfilesDir, "dotfiles", dotfileSlugs, errors, validToolSlugs),
   ]);
 
   if (errors.length > 0) {
@@ -170,7 +226,7 @@ async function main() {
   }
 
   console.log(
-    `Content validation passed (${toolCount} tool files, ${workflowCount} workflow files).`
+    `Content validation passed (${toolCount} tool files, ${workflowCount} workflow files, ${dotfileCount} dotfile files).`
   );
 }
 

@@ -1,8 +1,9 @@
-import type { ToolFrontmatter, WorkflowFrontmatter } from "@/lib/types";
+import type { DotfileFrontmatter, ToolFrontmatter, WorkflowFrontmatter } from "@/lib/types";
 
 export type RecommendationFilter = "all" | "recommended" | "not-recommended";
 export type ToolSortOption = "newest" | "oldest" | "title";
 export type WorkflowSortOption = "newest" | "oldest" | "title";
+export type DotfileSortOption = "newest" | "oldest" | "title";
 
 export interface ToolFilterInput {
   searchTerm: string;
@@ -17,6 +18,13 @@ export interface WorkflowFilterInput {
   complexity: "All" | WorkflowFrontmatter["complexity"];
   toolFilter: string;
   sortBy: WorkflowSortOption;
+}
+
+export interface DotfileFilterInput {
+  searchTerm: string;
+  kind: "All" | DotfileFrontmatter["kind"];
+  toolFilter: string;
+  sortBy: DotfileSortOption;
 }
 
 function safeTimestamp(value: string): number {
@@ -60,16 +68,24 @@ export function filterAndSortTools(tools: ToolFrontmatter[], input: ToolFilterIn
   });
 }
 
-export function getAvailableWorkflowTools(workflows: WorkflowFrontmatter[]): string[] {
+function getAvailableToolValues(items: Array<{ toolsUsed: string[] }>): string[] {
   const values = new Set<string>();
 
-  for (const workflow of workflows) {
-    for (const tool of workflow.toolsUsed) {
+  for (const item of items) {
+    for (const tool of item.toolsUsed) {
       values.add(tool);
     }
   }
 
   return Array.from(values).sort((a, b) => a.localeCompare(b));
+}
+
+export function getAvailableWorkflowTools(workflows: WorkflowFrontmatter[]): string[] {
+  return getAvailableToolValues(workflows);
+}
+
+export function getAvailableDotfileTools(dotfiles: DotfileFrontmatter[]): string[] {
+  return getAvailableToolValues(dotfiles);
 }
 
 export function filterAndSortWorkflows(
@@ -89,6 +105,41 @@ export function filterAndSortWorkflows(
     const matchesTool = input.toolFilter === "All" || workflow.toolsUsed.includes(input.toolFilter);
 
     return matchesSearch && matchesComplexity && matchesTool;
+  });
+
+  return [...filtered].sort((a, b) => {
+    if (input.sortBy === "title") {
+      return a.title.localeCompare(b.title);
+    }
+
+    const aTime = safeTimestamp(a.dateAdded);
+    const bTime = safeTimestamp(b.dateAdded);
+
+    if (input.sortBy === "oldest") {
+      return aTime - bTime;
+    }
+
+    return bTime - aTime;
+  });
+}
+
+export function filterAndSortDotfiles(
+  dotfiles: DotfileFrontmatter[],
+  input: DotfileFilterInput
+): DotfileFrontmatter[] {
+  const normalizedQuery = input.searchTerm.trim().toLowerCase();
+
+  const filtered = dotfiles.filter((dotfile) => {
+    const matchesSearch =
+      normalizedQuery.length === 0 ||
+      dotfile.title.toLowerCase().includes(normalizedQuery) ||
+      dotfile.description.toLowerCase().includes(normalizedQuery) ||
+      dotfile.author.toLowerCase().includes(normalizedQuery);
+
+    const matchesKind = input.kind === "All" || dotfile.kind === input.kind;
+    const matchesTool = input.toolFilter === "All" || dotfile.toolsUsed.includes(input.toolFilter);
+
+    return matchesSearch && matchesKind && matchesTool;
   });
 
   return [...filtered].sort((a, b) => {

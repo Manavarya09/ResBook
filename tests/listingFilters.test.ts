@@ -1,10 +1,14 @@
+/// <reference types="bun-types" />
+
 import { describe, expect, it } from "bun:test";
 import {
+  filterAndSortDotfiles,
   filterAndSortTools,
   filterAndSortWorkflows,
+  getAvailableDotfileTools,
   getAvailableWorkflowTools,
 } from "@/lib/listingFilters";
-import type { ToolFrontmatter, WorkflowFrontmatter } from "@/lib/types";
+import type { DotfileFrontmatter, ToolFrontmatter, WorkflowFrontmatter } from "@/lib/types";
 
 const tools: ToolFrontmatter[] = [
   {
@@ -54,6 +58,36 @@ const workflows: WorkflowFrontmatter[] = [
     complexity: "Beginner",
     toolsUsed: ["gamma-llm"],
     dateAdded: "2026-04-01",
+  },
+];
+
+const dotfiles: DotfileFrontmatter[] = [
+  {
+    title: "Claude Code Prompt Pack",
+    slug: "claude-code-prompt-pack",
+    description: "Reusable prompting set for iterative builds",
+    author: "Manav",
+    kind: "Prompt Pack",
+    toolsUsed: ["claude-code", "cursor"],
+    dateAdded: "2026-04-05",
+  },
+  {
+    title: "Next.js AI Starter",
+    slug: "nextjs-ai-starter",
+    description: "Template structure for shipping AI web apps",
+    author: "Tanay",
+    kind: "Template",
+    toolsUsed: ["github-copilot", "cursor"],
+    dateAdded: "2026-04-04",
+  },
+  {
+    title: "Terminal Agent Config",
+    slug: "terminal-agent-config",
+    description: "Shell aliases and guardrails for coding agents",
+    author: "Team",
+    kind: "Config",
+    toolsUsed: ["claude-code"],
+    dateAdded: "2026-04-03",
   },
 ];
 
@@ -113,5 +147,37 @@ describe("workflow listing filters", () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].slug).toBe("research-loop");
+  });
+});
+
+describe("dotfile listing filters", () => {
+  it("returns unique available tools in sorted order", () => {
+    const result = getAvailableDotfileTools(dotfiles);
+
+    expect(result).toEqual(["claude-code", "cursor", "github-copilot"]);
+  });
+
+  it("filters by kind and tool", () => {
+    const result = filterAndSortDotfiles(dotfiles, {
+      searchTerm: "",
+      kind: "Prompt Pack",
+      toolFilter: "claude-code",
+      sortBy: "newest",
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].slug).toBe("claude-code-prompt-pack");
+  });
+
+  it("supports search by author", () => {
+    const result = filterAndSortDotfiles(dotfiles, {
+      searchTerm: "tanay",
+      kind: "All",
+      toolFilter: "All",
+      sortBy: "newest",
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].slug).toBe("nextjs-ai-starter");
   });
 });

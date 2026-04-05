@@ -19,6 +19,9 @@ export function Navbar() {
             <Link href="/#workflows" className="hover:opacity-75">
               workflows
             </Link>
+            <Link href="/dotfiles" className="hover:opacity-75">
+              dotfiles
+            </Link>
           </div>
         </div>
       </Container>

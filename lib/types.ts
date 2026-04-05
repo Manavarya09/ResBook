@@ -18,6 +18,16 @@ export interface WorkflowFrontmatter {
   dateAdded: string;
 }
 
+export interface DotfileFrontmatter {
+  title: string;
+  slug: string;
+  description: string;
+  author: string;
+  kind: "Prompt Pack" | "Config" | "Template";
+  toolsUsed: string[];
+  dateAdded: string;
+}
+
 export interface ToolContent {
   frontmatter: ToolFrontmatter;
   content: string;
@@ -25,5 +35,10 @@ export interface ToolContent {
 
 export interface WorkflowContent {
   frontmatter: WorkflowFrontmatter;
+  content: string;
+}
+
+export interface DotfileContent {
+  frontmatter: DotfileFrontmatter;
   content: string;
 }

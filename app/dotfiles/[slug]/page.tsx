@@ -2,9 +2,8 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getWorkflowBySlug, getAllWorkflowSlugs, getWorkflows } from "@/lib/mdx";
+import { getDotfileBySlug, getAllDotfileSlugs, getDotfiles } from "@/lib/mdx";
 import { getSiteUrl, siteConfig } from "@/lib/site";
-import { Verdict } from "@/components/mdx/Verdict";
 import { WorkflowStep } from "@/components/mdx/WorkflowStep";
 import { PromptBlock } from "@/components/mdx/PromptBlock";
 import { ToolLink } from "@/components/mdx/ToolLink";
@@ -12,39 +11,39 @@ import { WorkflowGraph } from "@/components/mdx/WorkflowGraph";
 import { TableOfContents } from "@/components/mdx/TableOfContents";
 import { PageNavigation } from "@/components/PageNavigation";
 
-interface WorkflowPageProps {
+interface DotfilePageProps {
   params: Promise<{
     slug: string;
   }>;
 }
 
 export async function generateStaticParams() {
-  const slugs = await getAllWorkflowSlugs();
+  const slugs = await getAllDotfileSlugs();
   return slugs.map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: WorkflowPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: DotfilePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const workflow = await getWorkflowBySlug(slug);
+  const dotfile = await getDotfileBySlug(slug);
 
-  if (!workflow) {
+  if (!dotfile) {
     return {
-      title: "Workflow Not Found | ResBook",
+      title: "Dotfile Not Found | ResBook",
     };
   }
 
-  const canonicalUrl = getSiteUrl(`/workflows/${slug}`);
-  const title = `${workflow.frontmatter.title} | ResBook`;
+  const canonicalUrl = getSiteUrl(`/dotfiles/${slug}`);
+  const title = `${dotfile.frontmatter.title} | ResBook`;
 
   return {
     title,
-    description: workflow.frontmatter.description,
+    description: dotfile.frontmatter.description,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
       title,
-      description: workflow.frontmatter.description,
+      description: dotfile.frontmatter.description,
       url: canonicalUrl,
       type: "article",
       siteName: siteConfig.name,
@@ -60,38 +59,42 @@ export async function generateMetadata({ params }: WorkflowPageProps): Promise<M
     twitter: {
       card: "summary_large_image",
       title,
-      description: workflow.frontmatter.description,
+      description: dotfile.frontmatter.description,
       images: [siteConfig.defaultOgPath],
     },
   };
 }
 
 const components = {
-  Verdict,
   WorkflowStep,
   PromptBlock,
   ToolLink,
   WorkflowGraph,
 };
 
-export default async function WorkflowPage({ params }: WorkflowPageProps) {
+export default async function DotfilePage({ params }: DotfilePageProps) {
   const { slug } = await params;
-  const workflow = await getWorkflowBySlug(slug);
+  const dotfile = await getDotfileBySlug(slug);
 
-  if (!workflow) {
+  if (!dotfile) {
     notFound();
   }
 
-  // Get all workflows for navigation
-  const allWorkflows = await getWorkflows();
-  const currentIndex = allWorkflows.findIndex((w) => w.frontmatter.slug === slug);
-  const prevWorkflow =
+  const allDotfiles = await getDotfiles();
+  const currentIndex = allDotfiles.findIndex((item) => item.frontmatter.slug === slug);
+  const prevDotfile =
     currentIndex > 0
-      ? { title: allWorkflows[currentIndex - 1].frontmatter.title, href: `/workflows/${allWorkflows[currentIndex - 1].frontmatter.slug}` }
+      ? {
+          title: allDotfiles[currentIndex - 1].frontmatter.title,
+          href: `/dotfiles/${allDotfiles[currentIndex - 1].frontmatter.slug}`,
+        }
       : undefined;
-  const nextWorkflow =
-    currentIndex < allWorkflows.length - 1
-      ? { title: allWorkflows[currentIndex + 1].frontmatter.title, href: `/workflows/${allWorkflows[currentIndex + 1].frontmatter.slug}` }
+  const nextDotfile =
+    currentIndex < allDotfiles.length - 1
+      ? {
+          title: allDotfiles[currentIndex + 1].frontmatter.title,
+          href: `/dotfiles/${allDotfiles[currentIndex + 1].frontmatter.slug}`,
+        }
       : undefined;
 
   return (
@@ -99,45 +102,42 @@ export default async function WorkflowPage({ params }: WorkflowPageProps) {
       <TableOfContents />
 
       <div className="max-w-3xl px-8 py-12">
-        {/* Breadcrumb */}
         <div className="mb-8 text-sm flex items-center gap-2 text-gray-600 dark:text-gray-400">
           <Link href="/" className="hover:text-black dark:hover:text-white">
             home
           </Link>
           <span>/</span>
-          <Link href="/workflows" className="hover:text-black dark:hover:text-white">
-            workflows
+          <Link href="/dotfiles" className="hover:text-black dark:hover:text-white">
+            dotfiles
           </Link>
           <span>/</span>
-          <span className="text-black dark:text-white">{workflow.frontmatter.title}</span>
+          <span className="text-black dark:text-white">{dotfile.frontmatter.title}</span>
         </div>
 
-        {/* Header */}
         <div className="mb-12">
-          <h1 className="text-5xl font-bold mb-4">{workflow.frontmatter.title}</h1>
+          <h1 className="text-5xl font-bold mb-4">{dotfile.frontmatter.title}</h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-6">
-            {workflow.frontmatter.description}
+            {dotfile.frontmatter.description}
           </p>
           <div className="flex flex-wrap gap-3 items-center mb-4">
             <span className="text-xs font-bold uppercase bg-gray-100 dark:bg-gray-900 px-3 py-1 border border-gray-300 dark:border-gray-700">
-              {workflow.frontmatter.complexity}
+              {dotfile.frontmatter.kind}
             </span>
             <span className="text-sm">
-              by <strong>{workflow.frontmatter.author}</strong>
+              by <strong>{dotfile.frontmatter.author}</strong>
             </span>
             <span className="text-xs text-gray-600 dark:text-gray-400">
-              Added {new Date(workflow.frontmatter.dateAdded).toLocaleDateString()}
+              Added {new Date(dotfile.frontmatter.dateAdded).toLocaleDateString()}
             </span>
           </div>
 
-          {/* Tools Used */}
-          {workflow.frontmatter.toolsUsed.length > 0 && (
+          {dotfile.frontmatter.toolsUsed.length > 0 && (
             <div className="border-t border-gray-300 pt-4 dark:border-gray-700 mt-6">
               <p className="text-xs font-bold uppercase mb-3 text-gray-600 dark:text-gray-400">
                 Tools used
               </p>
               <div className="flex flex-wrap gap-2">
-                {workflow.frontmatter.toolsUsed.map((toolSlug) => (
+                {dotfile.frontmatter.toolsUsed.map((toolSlug) => (
                   <Link
                     key={toolSlug}
                     href={`/tools/${toolSlug}`}
@@ -151,13 +151,11 @@ export default async function WorkflowPage({ params }: WorkflowPageProps) {
           )}
         </div>
 
-        {/* Content */}
         <article className="prose dark:prose-invert max-w-none">
-          <MDXRemote source={workflow.content} components={components} />
+          <MDXRemote source={dotfile.content} components={components} />
         </article>
 
-        {/* Page Navigation */}
-        <PageNavigation prev={prevWorkflow} next={nextWorkflow} />
+        <PageNavigation prev={prevDotfile} next={nextDotfile} />
       </div>
     </div>
   );

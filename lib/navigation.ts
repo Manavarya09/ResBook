@@ -27,6 +27,11 @@ export const navigation: NavItem[] = [
     icon: "workflow",
   },
   {
+    label: "Dotfiles",
+    href: "/dotfiles",
+    icon: "file",
+  },
+  {
     label: "Resources",
     href: "/resources",
     icon: "book",
