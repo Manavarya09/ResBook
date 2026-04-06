@@ -177,6 +177,22 @@ function validateWorkflowFrontmatter(data, filePath, errors, validToolSlugs) {
   validateScaleField(data, "dependencyRisk", filePath, errors);
   validateScaleField(data, "observability", filePath, errors);
 
+  if ("stepCount" in data) {
+    assertType("stepCount", data.stepCount, "number", errors, filePath);
+
+    if (typeof data.stepCount === "number" && (!Number.isInteger(data.stepCount) || data.stepCount < 1)) {
+      errors.push(`${filePath}: frontmatter "stepCount" must be a positive integer`);
+    }
+  }
+
+  if ("promptCount" in data) {
+    assertType("promptCount", data.promptCount, "number", errors, filePath);
+
+    if (typeof data.promptCount === "number" && (!Number.isInteger(data.promptCount) || data.promptCount < 0)) {
+      errors.push(`${filePath}: frontmatter "promptCount" must be a non-negative integer`);
+    }
+  }
+
   validateStringArrayField(data, "prerequisites", filePath, errors);
   validateStringArrayField(data, "failurePoints", filePath, errors);
 
