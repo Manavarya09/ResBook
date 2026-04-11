@@ -2,16 +2,10 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
-
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
-
+This project is currently in an early stage of development (`0.1.0`).
+Security updates are provided only for the latest version on the default
+branch. Older releases and unpublished development snapshots are not
+supported with security updates.
 ## Reporting a Vulnerability
 
 Please report suspected vulnerabilities privately to **security@example.com**.
