@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getDotfiles, getTools, getWorkflows } from "@/lib/mdx";
 import { cn } from "@/lib/utils";
+import { AIChatAssistant } from "@/components/ai/AIChatAssistant";
+import { PersonalStackBuilder } from "@/components/stack/PersonalStackBuilder";
 
 export default async function Home() {
   const [toolsData, workflowsData, dotfilesData] = await Promise.all([
@@ -12,6 +14,10 @@ export default async function Home() {
   const tools = toolsData.map((t) => t.frontmatter);
   const workflows = workflowsData.map((w) => w.frontmatter);
   const dotfiles = dotfilesData.map((d) => d.frontmatter);
+
+  const toolCount = tools.length;
+  const workflowCount = workflows.length;
+  const dotfileCount = dotfiles.length;
 
   return (
     <div className="relative border-l border-gray-300 dark:border-gray-700 h-screen overflow-hidden flex flex-col">
@@ -38,12 +44,19 @@ export default async function Home() {
             </h1>
 
             {/* Description */}
-            <p className="text-center text-sm md:text-base text-gray-700 dark:text-gray-300 mb-12">
-              A curated directory of AI tools, agentic workflows, and developer configurations.
+            <p className="text-center text-sm md:text-base text-gray-700 dark:text-gray-300 mb-8">
+              The AI Ops Manual — Curated tools, executable workflows, and your personal AI stack.
             </p>
 
+            {/* Stats */}
+            <div className="flex justify-center gap-6 mb-8 text-xs text-gray-500">
+              <span>{toolCount} tools</span>
+              <span>{workflowCount} workflows</span>
+              <span>{dotfileCount} dotfiles</span>
+            </div>
+
             {/* Quick Navigation */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
               <Link
                 href="/tools"
                 className="border border-gray-300 bg-white/80 dark:border-gray-700 dark:bg-black/80 p-4 hover:bg-white dark:hover:bg-black transition-colors text-center no-underline"
@@ -65,6 +78,12 @@ export default async function Home() {
                 <p className="font-bold text-black dark:text-white text-sm">Explore Dotfiles</p>
                 <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">ready to use</p>
               </Link>
+            </div>
+
+            {/* New Features */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <AIChatAssistant />
+              <PersonalStackBuilder />
             </div>
           </div>
         </div>

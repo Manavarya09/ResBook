@@ -1,3 +1,11 @@
+export type ContentStatus = "draft" | "in-review" | "published" | "deprecated";
+
+export interface ChangelogEntry {
+  version: string;
+  date: string;
+  changes: string[];
+}
+
 export interface ToolFrontmatter {
   title: string;
   slug: string;
@@ -6,6 +14,10 @@ export interface ToolFrontmatter {
   pricing: "Free" | "Freemium" | "Paid";
   worthIt: boolean;
   dateAdded: string;
+  status?: ContentStatus;
+  lastUpdated?: string;
+  contributors?: string[];
+  endorsements?: number;
   easeOfUse?: 1 | 2 | 3 | 4 | 5;
   outputQuality?: 1 | 2 | 3 | 4 | 5;
   speed?: 1 | 2 | 3 | 4 | 5;
@@ -14,6 +26,7 @@ export interface ToolFrontmatter {
   bestFor?: string[];
   integrations?: string[];
   startingPriceUsdMonthly?: number;
+  changelog?: ChangelogEntry[];
 }
 
 export type WorkflowComplexity = "Beginner" | "Intermediate" | "Advanced";
@@ -27,6 +40,10 @@ export interface WorkflowFrontmatter {
   complexity: WorkflowComplexity;
   toolsUsed: string[];
   dateAdded: string;
+  status?: ContentStatus;
+  lastUpdated?: string;
+  contributors?: string[];
+  endorsements?: number;
   bestFor?: string;
   expectedOutput?: string;
   stepCount?: number;
@@ -38,6 +55,7 @@ export interface WorkflowFrontmatter {
   dependencyRisk?: 1 | 2 | 3 | 4 | 5;
   observability?: 1 | 2 | 3 | 4 | 5;
   maintenanceLevel?: WorkflowMaintenanceLevel;
+  changelog?: ChangelogEntry[];
 }
 
 export interface DotfileFrontmatter {
@@ -48,6 +66,11 @@ export interface DotfileFrontmatter {
   kind: "Prompt Pack" | "Config" | "Template";
   toolsUsed: string[];
   dateAdded: string;
+  status?: ContentStatus;
+  lastUpdated?: string;
+  contributors?: string[];
+  endorsements?: number;
+  changelog?: ChangelogEntry[];
 }
 
 export interface ToolContent {
