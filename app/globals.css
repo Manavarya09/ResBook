@@ -27,9 +27,63 @@
   }
 
   /* Dark mode overrides */
-  @media (prefers-color-scheme: dark) {
+  html.dark body {
+    @apply bg-black text-white;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  /* Print styles */
+  @media print {
+    nav, 
+    aside, 
+    .no-print,
+    footer,
+    button {
+      display: none !important;
+    }
+
     body {
-      @apply bg-black text-white;
+      @apply bg-white text-black;
+      font-size: 12pt;
+      line-height: 1.5;
+    }
+
+    main {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: none !important;
+    }
+
+    a {
+      color: black;
+      text-decoration: underline;
+    }
+
+    a[href]:after {
+      content: " (" attr(href) ")";
+      font-size: 10pt;
+      color: #666;
+    }
+
+    h1, h2, h3, h4 {
+      page-break-after: avoid;
+      page-break-inside: avoid;
+    }
+
+    pre, blockquote {
+      page-break-inside: avoid;
+      border: 1px solid #ccc;
+      background: #f9f9f9;
+    }
+
+    article {
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
     }
   }
 
