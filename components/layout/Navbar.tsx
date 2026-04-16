@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container } from "./Container";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export function Navbar() {
   return (
@@ -9,7 +10,7 @@ export function Navbar() {
           <Link href="/" className="text-xl font-bold hover:opacity-75">
             resbook
           </Link>
-          <div className="flex gap-6">
+          <div className="flex gap-6 items-center">
             <Link href="/" className="hover:opacity-75">
               home
             </Link>
@@ -22,8 +23,14 @@ export function Navbar() {
             <Link href="/dotfiles" className="hover:opacity-75">
               dotfiles
             </Link>
+            <Link href="/categories" className="hover:opacity-75">
+              categories
+            </Link>
             <Link href="/collections" className="hover:opacity-75">
               collections
+            </Link>
+            <Link href="/bookmarks" className="hover:opacity-75">
+              saved
             </Link>
             <Link href="/compare" className="hover:opacity-75">
               compare
@@ -34,6 +41,7 @@ export function Navbar() {
             <Link href="/submit" className="hover:opacity-75 text-green-600">
               submit
             </Link>
+            <ThemeToggle />
           </div>
         </div>
       </Container>
