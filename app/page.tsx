@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { getDotfiles, getTools, getWorkflows } from "@/lib/mdx";
 import { cn } from "@/lib/utils";
 import { AIChatAssistant } from "@/components/ai/AIChatAssistant";
 import { PersonalStackBuilder } from "@/components/stack/PersonalStackBuilder";
 import { CompletionStats } from "@/components/ui/CompletionStats";
+import { RecentActivity } from "@/components/ui/RecentActivity";
 
 export default async function Home() {
   const [toolsData, workflowsData, dotfilesData] = await Promise.all([
@@ -86,6 +88,12 @@ export default async function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <AIChatAssistant />
               <PersonalStackBuilder />
+            </div>
+
+            <div className="mt-8">
+              <Suspense fallback={null}>
+                <RecentActivity />
+              </Suspense>
             </div>
           </div>
         </div>
