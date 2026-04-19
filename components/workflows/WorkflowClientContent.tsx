@@ -1,12 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { MDXRemote } from "next-mdx-remote/rsc";
+import { useState, useEffect, type ReactNode } from "react";
 import Link from "next/link";
-import { Verdict } from "@/components/mdx/Verdict";
-import { WorkflowStep } from "@/components/mdx/WorkflowStep";
-import { PromptBlock } from "@/components/mdx/PromptBlock";
-import { WorkflowGraph } from "@/components/mdx/WorkflowGraph";
 import { TableOfContents } from "@/components/mdx/TableOfContents";
 import { PageNavigation } from "@/components/PageNavigation";
 import { ReadinessBadge } from "@/components/workflows/ReadinessBadge";
@@ -17,9 +12,16 @@ import { UpdatedBadge } from "@/components/ui/UpdatedBadge";
 import type { WorkflowContent, ToolFrontmatter } from "@/lib/types";
 import { getWorkflowReadiness } from "@/lib/workflowReadiness";
 
+interface WorkflowTool {
+  slug: string;
+  title: string;
+  category?: string;
+  pricing?: string;
+}
+
 interface WorkflowClientContentProps {
   workflow: WorkflowContent;
-  toolMetadata: Map<string, ToolFrontmatter>;
+  workflowTools: WorkflowTool[];
   prevWorkflow?: { title: string; href: string };
   nextWorkflow?: { title: string; href: string };
   toolLinks: Map<string, string>;
@@ -28,7 +30,7 @@ interface WorkflowClientContentProps {
 
 export function WorkflowClientContent({
   workflow,
-  toolMetadata,
+  workflowTools,
   prevWorkflow,
   nextWorkflow,
   toolLinks,
@@ -37,24 +39,6 @@ export function WorkflowClientContent({
   const [isRunnerMode, setIsRunnerMode] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [addedToStack, setAddedToStack] = useState(false);
-
-  const components = {
-    Verdict,
-    WorkflowStep,
-    PromptBlock,
-    WorkflowGraph,
-    ToolLink: ({ slug }: { slug: string }) => {
-      const title = toolLinks.get(slug) || slug;
-      return (
-        <Link
-          href={`/tools/${slug}`}
-          className="inline-block border border-black px-2 py-1 hover:bg-gray-100 dark:border-white dark:hover:bg-gray-900"
-        >
-          {title}
-        </Link>
-      );
-    },
-  };
 
   useEffect(() => {
     setIsClient(true);
@@ -66,16 +50,6 @@ export function WorkflowClientContent({
   const prerequisiteCount = workflow.frontmatter.prerequisites?.length ?? 0;
   const failurePointCount = workflow.frontmatter.failurePoints?.length ?? 0;
   const visibleFlowNodes = Math.min(stepCount, 12);
-
-  const workflowTools = workflow.frontmatter.toolsUsed.map((toolSlug) => {
-    const metadata = toolMetadata.get(toolSlug);
-    return {
-      slug: toolSlug,
-      title: metadata?.title ?? toolSlug,
-      category: metadata?.category,
-      pricing: metadata?.pricing,
-    };
-  });
 
   const handleAddToStack = () => {
     if (!isClient) return;
@@ -279,10 +253,10 @@ export function WorkflowClientContent({
         <article className="prose dark:prose-invert max-w-none">
           {isRunnerMode && stepCount > 0 && isClient ? (
             <WorkflowRunnerProvider slug={workflow.frontmatter.slug} totalSteps={stepCount}>
-              <MDXRemote source={workflow.content} components={components} />
+              {children}
             </WorkflowRunnerProvider>
           ) : (
-            <MDXRemote source={workflow.content} components={components} />
+            children
           )}
         </article>
 
